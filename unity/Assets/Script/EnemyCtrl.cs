@@ -6,6 +6,8 @@ public class EnemyCtrl : MonoBehaviour {
 	CharaAnimation charaAnimation;
     CharacterMove characterMove;
 	Transform attackTarget;
+    GameRuleCtrl gameRuleCtrl;
+
     // 待機時間は２秒とする
     public float waitBaseTime = 2.0f;
     // 残り待機時間
@@ -33,7 +35,8 @@ public class EnemyCtrl : MonoBehaviour {
 	void Start () {
         status = GetComponent<CharacterStatus>();
         charaAnimation = GetComponent<CharaAnimation>();
-    	characterMove = GetComponent<CharacterMove>(); 
+    	characterMove = GetComponent<CharacterMove>();
+        gameRuleCtrl = FindObjectOfType<GameRuleCtrl>();
         // 初期位置を保持
         basePosition = transform.position;
         // 待機時間
@@ -70,7 +73,7 @@ public class EnemyCtrl : MonoBehaviour {
             case State.Died:
                 Died();
                 break;
-            }
+			}
 		}
 	}
 	
@@ -170,9 +173,13 @@ public class EnemyCtrl : MonoBehaviour {
 
     void Died()
 	{
-        status.died = true;
+		status.died = true;
         dropItem();
         Destroy(gameObject);
+        if (gameObject.tag == "Boss")
+        {
+            gameRuleCtrl.GameClear();
+        }
     }
 	
 	void Damage(AttackArea.AttackInfo attackInfo)
@@ -181,7 +188,7 @@ public class EnemyCtrl : MonoBehaviour {
 		if (status.HP <= 0) {
 			status.HP = 0;
 			// 体力０なので死亡
-            ChangeState(State.Died);
+			ChangeState(State.Died);
 		}
 	}
 	
@@ -189,8 +196,8 @@ public class EnemyCtrl : MonoBehaviour {
 	void StateStartCommon()
 	{
 		status.attacking = false;
-        status.died = false;
-    }
+		status.died = false;
+	}
     // 攻撃対象を設定する
     public void SetAttackTarget(Transform target)
     {
