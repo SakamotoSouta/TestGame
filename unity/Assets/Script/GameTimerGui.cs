@@ -4,6 +4,7 @@ using System.Collections;
 public class GameTimerGui : MonoBehaviour
 {
 	GameRuleCtrl gameRuleCtrl;
+	private GameObject Label;
 
 	float baseWidth = 854f;
 	float baseHeight = 480f;
@@ -24,10 +25,11 @@ public class GameTimerGui : MonoBehaviour
 			Quaternion.identity,
 			new Vector3(Screen.width / baseWidth, Screen.height / baseHeight, 1f));
 		
-		// タイマー.
-		GUI.Label(
-			new Rect(8f, 8f, 128f, 48f),
-			new GUIContent(gameRuleCtrl.timeRemaining.ToString("0"), timerIcon),
-			timerLabelStyle);
+		// タイマー
+		Label = GameObject.Find ("Label");
+		if (Label) {
+			UILabel labelText = Label.GetComponent("UILabel") as UILabel;
+			labelText.text = gameRuleCtrl.timeRemaining.ToString("0");
+		}
 	}
 }

@@ -3,37 +3,52 @@ using System.Collections;
 
 public class CharacterStatusGui : MonoBehaviour
 {
-    float baseWidth = 854f;
-    float baseHeight = 480f;
+	public GameObject labelPrefab;
+	public GameObject sliderPrefab;
+
+	GameObject parent;
+
+	// プレイヤーステータスGUI
+	GameObject playerSlider;
+	GameObject playerLabel;
+	// ターゲットステータスGUI
+	GameObject enemySlider;
+	GameObject enemyLabel;
+
+	// 画面の中心
+    float baseWidth = Screen.width / 2;
+    float baseHeight = Screen.height / 2;
 
     // ステータス.
     CharacterStatus playerStatus;
     Vector2 playerStatusOffset = new Vector2(8f, 80f);
-
-    // 名前.
-    Rect nameRect = new Rect(0f, 0f, 120f, 24f);
-    public GUIStyle nameLabelStyle;
-
+	
     // ライフバー.
-    public Texture backLifeBarTexture;
-    public Texture frontLifeBarTexture;
     float frontLifeBarOffsetX = 2f;
     float lifeBarTextureWidth = 128f;
-    Rect playerLifeBarRect = new Rect(0f, 0f, 128f, 16f);
     Color playerFrontLifeBarColor = Color.green;
-    Rect enemyLifeBarRect = new Rect(0f, 0f, 128f, 24f);
     Color enemyFrontLifeBarColor = Color.red;
+
+	void Start(){
+		parent = GameObject.Find ("Panel");
+		// NGUIの生成
+		playerSlider = NGUITools.AddChild (parent, sliderPrefab);
+		playerLabel = NGUITools.AddChild (parent, labelPrefab);
+		enemySlider = NGUITools.AddChild (parent, sliderPrefab);
+		enemyLabel = NGUITools.AddChild (parent, labelPrefab);
+	}
 
     // プレイヤーステータスの描画.
     void DrawPlayerStatus()
     {
-        float x = baseWidth - playerLifeBarRect.width - playerStatusOffset.x;
-        float y = playerStatusOffset.y;
+		float x = baseWidth - playerStatusOffset.x;
+		float y = playerStatusOffset.y;
         DrawCharacterStatus(
             x, y,
             playerStatus,
-            playerLifeBarRect,
-            playerFrontLifeBarColor);
+            playerFrontLifeBarColor,
+			playerLabel,
+			playerSlider);
     }
 
     // 敵ステータスの描画.
@@ -43,22 +58,31 @@ public class CharacterStatusGui : MonoBehaviour
         {
 			CharacterStatus target_status = playerStatus.lastAttackTarget.GetComponent<CharacterStatus>();
             DrawCharacterStatus(
-                (baseWidth - enemyLifeBarRect.width) / 2.0f, 0f,
+                baseWidth, 0f,
 				target_status,
-                enemyLifeBarRect,
-                enemyFrontLifeBarColor);
+                enemyFrontLifeBarColor,
+				enemyLabel,
+				enemySlider);
         }
     }
 
     // キャラクターステータスの描画.
-    void DrawCharacterStatus(float x, float y, CharacterStatus status, Rect bar_rect, Color front_color)
+    void DrawCharacterStatus(float x, float y, CharacterStatus status, Color front_color, GameObject label, GameObject slider)
     {
+		// ラベルの取得
+		if (label != null) {
+			Transform t = label.transform;
+			t.position = new Vector3(x, y, 0); 
+			UILabel UIlabel = label.GetComponent("UILabel") as UILabel;
+			UIlabel.text = status.characterName;
+		}
         // 名前.
-        GUI.Label(
+        /*GUI.Label(
             new Rect(x, y, nameRect.width, nameRect.height),
 			status.characterName,
             nameLabelStyle);
-		
+
+
 		float life_value = (float)status.HP / status.MaxHP;
 		if(backLifeBarTexture != null)
 		{
@@ -67,6 +91,19 @@ public class CharacterStatusGui : MonoBehaviour
 			GUI.DrawTexture(new Rect(x, y, bar_rect.width, bar_rect.height), backLifeBarTexture);
 		}
 
+		Slider = GameObject.Find ("Slider");
+		if (Slider) {
+			UISlider slider = Slider.GetComponent("UISlider") as UISlider;
+			//GameObject Fore = GameObject.Find("Foreground");
+			//float resize_front_bar_offset_x = frontLifeBarOffsetX * bar_rect.width / lifeBarTextureWidth;
+			//float front_bar_width = bar_rect.width - resize_front_bar_offset_x * 2;
+			//var gui_color = GUI.color;
+			//GUI.color = front_color;
+			//UISlicedSprite s= Fore.GetComponent("UISlicedSprite") as UISlicedSprite;
+			slider.sliderValue = life_value;
+			//GUI.DrawTexture(new Rect(x + resize_front_bar_offset_x, y, front_bar_width * life_value, bar_rect.height), frontLifeBarTexture);
+			//GUI.color = gui_color;			
+		}
         // 前面ライフバー.
 		if(frontLifeBarTexture != null)
 		{
@@ -77,6 +114,7 @@ public class CharacterStatusGui : MonoBehaviour
 			GUI.DrawTexture(new Rect(x + resize_front_bar_offset_x, y, front_bar_width * life_value, bar_rect.height), frontLifeBarTexture);
 			GUI.color = gui_color;
 		}
+*/
     }
 
     void Awake()
