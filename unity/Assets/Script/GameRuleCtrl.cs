@@ -11,6 +11,17 @@ public class GameRuleCtrl : MonoBehaviour {
 	// シーン移行時間
 	public float sceneChangeTime = 3.0f;
 
+	public AudioClip clearSeClip;
+	AudioSource clearSeAudio;
+
+	void Start()
+	{
+		// オーディオの初期化.
+		clearSeAudio = gameObject.AddComponent<AudioSource>();
+		clearSeAudio.loop = false;
+		clearSeAudio.clip = clearSeClip;
+	}
+
 	void Update()
 	{
 		// ゲーム終了条件成立後、シーン遷移
@@ -37,5 +48,8 @@ public class GameRuleCtrl : MonoBehaviour {
 	public void GameClear()
 	{
 		gameClear = true;
+
+		// オーディオ再生.
+		clearSeAudio.Play ();
 	}
 }

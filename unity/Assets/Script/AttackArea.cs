@@ -1,13 +1,20 @@
-﻿
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 
 public class AttackArea : MonoBehaviour {
 	CharacterStatus status;
+
+	public AudioClip hitSeClip;
+	AudioSource hitSeAudio;
 	
 	void Start()
 	{
 		status = transform.root.GetComponent<CharacterStatus>();
+
+		// オーティオの初期化.
+		hitSeAudio = gameObject.AddComponent<AudioSource>();
+		hitSeAudio.clip = hitSeClip;
+		hitSeAudio.loop = false;
 	}
 	
 	
@@ -24,11 +31,12 @@ public class AttackArea : MonoBehaviour {
 		AttackInfo attackInfo = new AttackInfo();
 		// 攻撃力の計算.
 		attackInfo.attackPower = status.Power;
-        // 攻撃強化中
-        if (status.powerBoost)
-            attackInfo.attackPower += attackInfo.attackPower;
 
-        attackInfo.attacker = transform.root;
+		// 攻撃強化中
+		if (status.powerBoost)
+			attackInfo.attackPower += attackInfo.attackPower;
+		
+		attackInfo.attacker = transform.root;
 		
 		return attackInfo;
 	}
@@ -40,6 +48,8 @@ public class AttackArea : MonoBehaviour {
 		other.SendMessage("Damage",GetAttackInfo());
 		// 攻撃した対象を保存.
 		status.lastAttackTarget = other.transform.root.gameObject;
+		// オーディオ再生.
+		hitSeAudio.Play();
 	}
 	
 	

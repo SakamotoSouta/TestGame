@@ -3,6 +3,9 @@ using System.Collections;
 
 public class AttackAreaActivator : MonoBehaviour {
 	Collider[] attackAreaColliders; // 攻撃判定コライダの配列.
+
+	public AudioClip attackSeClip;
+	AudioSource attackSeAudio;
 	
 	void Start () {
 		// 子供のGameObjectからAttackAreaスクリプトがついているGameObjectを探す。
@@ -14,6 +17,11 @@ public class AttackAreaActivator : MonoBehaviour {
 			attackAreaColliders[attackAreaCnt] = attackAreas[attackAreaCnt].collider;
 			attackAreaColliders[attackAreaCnt].enabled = false;  // 初期はfalseにしておく.
 		}
+
+		// オーディオの初期化.
+		attackSeAudio = gameObject.AddComponent<AudioSource>();
+		attackSeAudio.clip = attackSeClip;
+		attackSeAudio.loop = false;
 	}
 	
 	// アニメーションイベントのStartAttackHitを受け取ってコライダを有効にする
@@ -21,6 +29,9 @@ public class AttackAreaActivator : MonoBehaviour {
 	{
 		foreach (Collider attackAreaCollider in attackAreaColliders)
 			attackAreaCollider.enabled = true;
+		
+		// オーディオ再生.
+		attackSeAudio.Play();
 	}
 	
 	// アニメーションイベントのEndAttackHitを受け取ってコライダを無効にする
