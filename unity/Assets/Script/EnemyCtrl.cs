@@ -7,6 +7,7 @@ public class EnemyCtrl : MonoBehaviour {
     CharacterMove characterMove;
 	Transform attackTarget;
     GameRuleCtrl gameRuleCtrl;
+    public GameObject hitEffect;
 
     // 待機時間は２秒とする
     public float waitBaseTime = 2.0f;
@@ -73,7 +74,7 @@ public class EnemyCtrl : MonoBehaviour {
             case State.Died:
                 Died();
                 break;
-			}
+            }
 		}
 	}
 	
@@ -184,7 +185,11 @@ public class EnemyCtrl : MonoBehaviour {
 	
 	void Damage(AttackArea.AttackInfo attackInfo)
 	{
-		status.HP -= attackInfo.attackPower;
+        GameObject effect = Instantiate(hitEffect, transform.position, Quaternion.identity) as GameObject;
+        effect.transform.localPosition = transform.position + new Vector3(0.0f, 0.5f, 0.0f);
+        Destroy(effect, 0.3f);
+        
+        status.HP -= attackInfo.attackPower;
 		if (status.HP <= 0) {
 			status.HP = 0;
 			// 体力０なので死亡
